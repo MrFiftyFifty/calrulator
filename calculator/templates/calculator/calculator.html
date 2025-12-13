@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .calculator-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .operations {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .operation-btn {
+            padding: 15px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .operation-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .operation-btn.selected {
+            background: #667eea;
+            color: white;
+        }
+        
+        .calculate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .result-box {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .result-box.success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        
+        .result-box.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        
+        input[type="radio"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <h1>🧮 Калькулятор</h1>
+        
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="input-group">
+                <label for="num1">Первое число:</label>
+                <input type="number" id="num1" name="num1" step="any" required value="{{ request.POST.num1 }}">
+            </div>
+            
+            <div class="input-group">
+                <label for="num2">Второе число:</label>
+                <input type="number" id="num2" name="num2" step="any" required value="{{ request.POST.num2 }}">
+            </div>
+            
+            <div class="input-group">
+                <label>Выберите операцию:</label>
+                <div class="operations">
+                    <label for="add" class="operation-btn {% if request.POST.operation == 'add' %}selected{% endif %}">
+                        <input type="radio" id="add" name="operation" value="add" {% if request.POST.operation == 'add' %}checked{% endif %} required>
+                        +
+                    </label>
+                    <label for="subtract" class="operation-btn {% if request.POST.operation == 'subtract' %}selected{% endif %}">
+                        <input type="radio" id="subtract" name="operation" value="subtract" {% if request.POST.operation == 'subtract' %}checked{% endif %}>
+                        −
+                    </label>
+                    <label for="multiply" class="operation-btn {% if request.POST.operation == 'multiply' %}selected{% endif %}">
+                        <input type="radio" id="multiply" name="operation" value="multiply" {% if request.POST.operation == 'multiply' %}checked{% endif %}>
+                        ×
+                    </label>
+                    <label for="divide" class="operation-btn {% if request.POST.operation == 'divide' %}selected{% endif %}">
+                        <input type="radio" id="divide" name="operation" value="divide" {% if request.POST.operation == 'divide' %}checked{% endif %}>
+                        ÷
+                    </label>
+                </div>
+            </div>
+            
+            <button type="submit" class="calculate-btn">Вычислить</button>
+        </form>
+        
+        {% if result is not None %}
+            <div class="result-box success">
+                Результат: {{ result }}
+            </div>
+        {% endif %}
+        
+        {% if error %}
+            <div class="result-box error">
+                {{ error }}
+            </div>
+        {% endif %}
+    </div>
+    
+    <script>
+        // Add visual feedback for selected operation
+        document.querySelectorAll('.operation-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.operation-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+    </script>
+</body>
+</html>
