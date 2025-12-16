@@ -88,17 +88,17 @@
 
 {% block content %}
     <div class="history-container">
-        <h1>📜 История вычислений{% if user.is_staff %} (все пользователи){% endif %}</h1>
+        <h1>История вычислений{% if user.is_staff %} (все пользователи){% endif %}</h1>
         
         <!-- Search and Filters -->
         <form method="GET" class="filters-form" style="margin-bottom: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
                 <div>
-                    <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">🔍 Поиск:</label>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">Поиск:</label>
                     <input type="text" name="search" value="{{ search_query }}" placeholder="Поиск по числам..." style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;">
                 </div>
                 <div>
-                    <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">📂 Операция:</label>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">Операция:</label>
                     <select name="operation" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;">
                         <option value="">Все</option>
                         {% for op_code, op_name in operations %}
@@ -107,7 +107,7 @@
                     </select>
                 </div>
                 <div>
-                    <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">🔄 Сортировка:</label>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">Сортировка:</label>
                     <select name="sort" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;">
                         <option value="-timestamp" {% if sort_by == '-timestamp' %}selected{% endif %}>Новые первые</option>
                         <option value="timestamp" {% if sort_by == 'timestamp' %}selected{% endif %}>Старые первые</option>
@@ -137,7 +137,7 @@
                     </div>
                     <div class="timestamp">
                         {{ item.timestamp|date:"d.m.Y H:i:s" }}
-                        {% if user.is_staff %} | 👤 {{ item.user.username }}{% endif %}
+                        {% if user.is_staff %} | {{ item.user.username }}{% endif %}
                     </div>
                 </div>
             </li>
@@ -146,11 +146,11 @@
         
         <form method="POST" action="{% url 'calculator:clear_history' %}" onsubmit="return confirm('Вы уверены, что хотите очистить всю историю?');">
             {% csrf_token %}
-            <button type="submit" class="clear-btn">🗑️ Очистить историю</button>
+            <button type="submit" class="clear-btn">Очистить историю</button>
         </form>
         {% else %}
         <div class="empty-message">
-            <p>📭 История пуста</p>
+            <p>История пуста</p>
             <p style="font-size: 16px; margin-top: 10px;">Выполните вычисления, чтобы они отобразились здесь</p>
         </div>
         {% endif %}
