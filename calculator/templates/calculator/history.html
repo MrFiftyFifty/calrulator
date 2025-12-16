@@ -1,0 +1,123 @@
+{% extends 'calculator/base.html' %}
+
+{% block title %}История операций{% endblock %}
+
+{% block extra_style %}
+    .history-container {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    h1 {
+        color: #333;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+    
+    .history-list {
+        list-style: none;
+        margin-bottom: 30px;
+    }
+    
+    .history-item {
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: transform 0.2s;
+    }
+    
+    .history-item:hover {
+        transform: translateX(5px);
+        background: #e9ecef;
+    }
+    
+    .calculation {
+        font-size: 20px;
+        font-weight: bold;
+        color: #333;
+    }
+    
+    .result {
+        font-size: 24px;
+        color: #667eea;
+        font-weight: bold;
+    }
+    
+    .timestamp {
+        font-size: 14px;
+        color: #666;
+        margin-top: 5px;
+    }
+    
+    .empty-message {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+        font-size: 18px;
+    }
+    
+    .clear-btn {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, #ea5455 0%, #ff6b6b 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.3s;
+    }
+    
+    .clear-btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .clear-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+    }
+{% endblock %}
+
+{% block content %}
+    <div class="history-container">
+        <h1>📜 История вычислений</h1>
+        
+        {% if history %}
+        <ul class="history-list">
+            {% for item in history %}
+            <li class="history-item">
+                <div>
+                    <div class="calculation">
+                        {% if item.num2 is not None %}
+                            {{ item.num1 }} {{ item.get_operation_symbol }} {{ item.num2 }}
+                        {% else %}
+                            {{ item.get_operation_symbol }}({{ item.num1 }})
+                        {% endif %}
+                        = <span class="result">{{ item.result }}</span>
+                    </div>
+                    <div class="timestamp">{{ item.timestamp|date:"d.m.Y H:i:s" }}</div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        
+        <form method="POST" action="{% url 'calculator:clear_history' %}" onsubmit="return confirm('Вы уверены, что хотите очистить всю историю?');">
+            {% csrf_token %}
+            <button type="submit" class="clear-btn">🗑️ Очистить историю</button>
+        </form>
+        {% else %}
+        <div class="empty-message">
+            <p>📭 История пуста</p>
+            <p style="font-size: 16px; margin-top: 10px;">Выполните вычисления, чтобы они отобразились здесь</p>
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}

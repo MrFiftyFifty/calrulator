@@ -1,26 +1,8 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Калькулятор</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        
+{% extends 'calculator/base.html' %}
+
+{% block title %}Калькулятор{% endblock %}
+
+{% block extra_style %}
         .calculator-container {
             background: white;
             padding: 40px;
@@ -64,7 +46,7 @@
         
         .operations {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
             margin-bottom: 20px;
         }
@@ -133,9 +115,17 @@
         input[type="radio"] {
             display: none;
         }
-    </style>
-</head>
-<body>
+        
+        .num2-group {
+            transition: all 0.3s;
+        }
+        
+        .num2-group.hidden {
+            display: none;
+        }
+{% endblock %}
+
+{% block content %}
     <div class="calculator-container">
         <h1>🧮 Калькулятор</h1>
         
@@ -147,9 +137,9 @@
                 <input type="number" id="num1" name="num1" step="any" required value="{{ request.POST.num1 }}">
             </div>
             
-            <div class="input-group">
+            <div class="input-group num2-group" id="num2Group">
                 <label for="num2">Второе число:</label>
-                <input type="number" id="num2" name="num2" step="any" required value="{{ request.POST.num2 }}">
+                <input type="number" id="num2" name="num2" step="any" value="{{ request.POST.num2 }}">
             </div>
             
             <div class="input-group">
@@ -171,6 +161,14 @@
                         <input type="radio" id="divide" name="operation" value="divide" {% if request.POST.operation == 'divide' %}checked{% endif %}>
                         ÷
                     </label>
+                    <label for="power" class="operation-btn {% if request.POST.operation == 'power' %}selected{% endif %}">
+                        <input type="radio" id="power" name="operation" value="power" {% if request.POST.operation == 'power' %}checked{% endif %}>
+                        xⁿ
+                    </label>
+                    <label for="sqrt" class="operation-btn {% if request.POST.operation == 'sqrt' %}selected{% endif %}">
+                        <input type="radio" id="sqrt" name="operation" value="sqrt" {% if request.POST.operation == 'sqrt' %}checked{% endif %}>
+                        √
+                    </label>
                 </div>
             </div>
             
@@ -191,13 +189,32 @@
     </div>
     
     <script>
+        const num2Group = document.getElementById('num2Group');
+        const num2Input = document.getElementById('num2');
+        
         // Add visual feedback for selected operation
         document.querySelectorAll('.operation-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.operation-btn').forEach(b => b.classList.remove('selected'));
                 this.classList.add('selected');
+                
+                // Handle sqrt operation - hide num2 field
+                const operation = this.querySelector('input').value;
+                if (operation === 'sqrt') {
+                    num2Group.classList.add('hidden');
+                    num2Input.removeAttribute('required');
+                } else {
+                    num2Group.classList.remove('hidden');
+                    num2Input.setAttribute('required', 'required');
+                }
             });
         });
+        
+        // Check on page load
+        const checkedOperation = document.querySelector('input[name="operation"]:checked');
+        if (checkedOperation && checkedOperation.value === 'sqrt') {
+            num2Group.classList.add('hidden');
+            num2Input.removeAttribute('required');
+        }
     </script>
-</body>
-</html>
+{% endblock %}
