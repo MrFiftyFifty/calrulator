@@ -88,7 +88,39 @@
 
 {% block content %}
     <div class="history-container">
-        <h1>📜 История вычислений</h1>
+        <h1>📜 История вычислений{% if user.is_staff %} (все пользователи){% endif %}</h1>
+        
+        <!-- Search and Filters -->
+        <form method="GET" class="filters-form" style="margin-bottom: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">🔍 Поиск:</label>
+                    <input type="text" name="search" value="{{ search_query }}" placeholder="Поиск по числам..." style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">📂 Операция:</label>
+                    <select name="operation" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;">
+                        <option value="">Все</option>
+                        {% for op_code, op_name in operations %}
+                            <option value="{{ op_code }}" {% if operation_filter == op_code %}selected{% endif %}>{{ op_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">🔄 Сортировка:</label>
+                    <select name="sort" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;">
+                        <option value="-timestamp" {% if sort_by == '-timestamp' %}selected{% endif %}>Новые первые</option>
+                        <option value="timestamp" {% if sort_by == 'timestamp' %}selected{% endif %}>Старые первые</option>
+                        <option value="result" {% if sort_by == 'result' %}selected{% endif %}>Результат (возраст)</option>
+                        <option value="-result" {% if sort_by == '-result' %}selected{% endif %}>Результат (убывание)</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">Применить</button>
+                <a href="{% url 'calculator:history' %}" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; text-decoration: none; display: inline-block; font-weight: bold;">Сбросить</a>
+            </div>
+        </form>
         
         {% if history %}
         <ul class="history-list">
@@ -103,7 +135,10 @@
                         {% endif %}
                         = <span class="result">{{ item.result }}</span>
                     </div>
-                    <div class="timestamp">{{ item.timestamp|date:"d.m.Y H:i:s" }}</div>
+                    <div class="timestamp">
+                        {{ item.timestamp|date:"d.m.Y H:i:s" }}
+                        {% if user.is_staff %} | 👤 {{ item.user.username }}{% endif %}
+                    </div>
                 </div>
             </li>
             {% endfor %}

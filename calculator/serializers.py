@@ -7,11 +7,12 @@ class CalculationHistorySerializer(serializers.ModelSerializer):
     
     operation_display = serializers.CharField(source='get_operation_display', read_only=True)
     operation_symbol = serializers.CharField(source='get_operation_symbol', read_only=True)
+    username = serializers.CharField(source='user.username', read_only=True)
     
     class Meta:
         model = CalculationHistory
-        fields = ['id', 'num1', 'num2', 'operation', 'operation_display', 'operation_symbol', 'result', 'timestamp']
-        read_only_fields = ['id', 'timestamp']
+        fields = ['id', 'username', 'num1', 'num2', 'operation', 'operation_display', 'operation_symbol', 'result', 'timestamp']
+        read_only_fields = ['id', 'username', 'timestamp']
 
 
 class CalculateSerializer(serializers.Serializer):

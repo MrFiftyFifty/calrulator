@@ -108,8 +108,15 @@
     <nav>
         <div class="logo">🧮 Калькулятор</div>
         <ul>
-            <li><a href="{% url 'calculator:calculator' %}" {% if request.resolver_match.url_name == 'calculator' %}class="active"{% endif %}>Калькулятор</a></li>
-            <li><a href="{% url 'calculator:history' %}" {% if request.resolver_match.url_name == 'history' %}class="active"{% endif %}>История</a></li>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'calculator:calculator' %}" {% if request.resolver_match.url_name == 'calculator' %}class="active"{% endif %}>Калькулятор</a></li>
+                <li><a href="{% url 'calculator:history' %}" {% if request.resolver_match.url_name == 'history' %}class="active"{% endif %}>История</a></li>
+                <li style="color: #667eea; font-weight: bold; padding: 8px 20px;">👤 {{ user.username }}{% if user.is_staff %} (Админ){% endif %}</li>
+                <li><a href="{% url 'calculator:logout' %}">Выход</a></li>
+            {% else %}
+                <li><a href="{% url 'calculator:login' %}" {% if request.resolver_match.url_name == 'login' %}class="active"{% endif %}>Вход</a></li>
+                <li><a href="{% url 'calculator:register' %}" {% if request.resolver_match.url_name == 'register' %}class="active"{% endif %}>Регистрация</a></li>
+            {% endif %}
         </ul>
     </nav>
     

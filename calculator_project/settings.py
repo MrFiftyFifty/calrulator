@@ -147,3 +147,7 @@ SIMPLE_JWT = {
     'SIGNING_KEY': SECRET_KEY,
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+# Login settings
+LOGIN_URL = 'calculator:login'
+LOGIN_REDIRECT_URL = 'calculator:calculator'

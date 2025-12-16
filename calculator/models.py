@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class CalculationHistory(models.Model):
@@ -13,6 +14,7 @@ class CalculationHistory(models.Model):
         ('sqrt', 'Квадратный корень'),
     ]
     
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь', related_name='calculations')
     num1 = models.FloatField(verbose_name='Первое число')
     num2 = models.FloatField(verbose_name='Второе число', null=True, blank=True)
     operation = models.CharField(max_length=20, choices=OPERATION_CHOICES, verbose_name='Операция')

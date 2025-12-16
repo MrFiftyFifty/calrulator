@@ -59,6 +59,7 @@ class CalculatorAPIViewSet(viewsets.ViewSet):
             
             # Save to history
             history_entry = CalculationHistory.objects.create(
+                user=request.user,
                 num1=num1,
                 num2=num2,
                 operation=operation,
@@ -90,19 +91,32 @@ class CalculatorAPIViewSet(viewsets.ViewSet):
     
     @action(detail=False, methods=['get'])
     def history(self, request):
-        """Get calculation history (last 10 entries)."""
-        history = CalculationHistory.objects.all()[:10]
+        """Get calculation history."""
+        # Admin sees all, user sees only their own
+        if request.user.is_staff:
+            history = CalculationHistory.objects.all()[:50]
+        else:
+            history = CalculationHistory.objects.filter(user=request.user)[:50]
+        
         serializer = CalculationHistorySerializer(history, many=True)
         
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     @action(detail=False, methods=['delete'])
     def clear_history(self, request):
-        """Clear all calculation history."""
-        deleted_count = CalculationHistory.objects.all().count()
-        CalculationHistory.objects.all().delete()
+        """Clear calculation history."""
+        if request.user.is_staff:
+            # Admin clears all history
+            deleted_count = CalculationHistory.objects.all().count()
+            CalculationHistory.objects.all().delete()
+            message = f'Deleted all {deleted_count} entries'
+        else:
+            # User clears only their own history
+            deleted_count = CalculationHistory.objects.filter(user=request.user).count()
+            CalculationHistory.objects.filter(user=request.user).delete()
+            message = f'Deleted your {deleted_count} entries'
         
         return Response(
-            {'message': f'Deleted {deleted_count} entries'},
+            {'message': message},
             status=status.HTTP_200_OK
         )

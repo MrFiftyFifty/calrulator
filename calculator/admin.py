@@ -6,9 +6,9 @@ from .models import CalculationHistory
 class CalculationHistoryAdmin(admin.ModelAdmin):
     """Admin interface for CalculationHistory model."""
     
-    list_display = ['id', 'num1', 'operation', 'num2', 'result', 'timestamp']
-    list_filter = ['operation', 'timestamp']
-    search_fields = ['num1', 'num2', 'result']
+    list_display = ['id', 'user', 'num1', 'operation', 'num2', 'result', 'timestamp']
+    list_filter = ['operation', 'timestamp', 'user']
+    search_fields = ['user__username', 'num1', 'num2', 'result']
     readonly_fields = ['timestamp']
     ordering = ['-timestamp']
     
